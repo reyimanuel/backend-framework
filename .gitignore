@@ -21,5 +21,4 @@ tmp
 .env
 
 # Key
-private.pem
-public.pem
+.pem
