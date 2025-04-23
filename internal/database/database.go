@@ -27,7 +27,7 @@ func ConnectDB() (*gorm.DB, *sql.DB) {
 			Colorful:                  true,
 		})
 
-	log.Println("connecting to databases")
+	log.Println("connecting to databases...")
 
 	db, err := gorm.Open(postgres.Open(cfg.DbUri), &gorm.Config{ // Open connection to database using GORM and PostgreSQL
 		Logger:                 sqlLogger, // Use the custom SQL logger
@@ -40,14 +40,12 @@ func ConnectDB() (*gorm.DB, *sql.DB) {
 		log.Fatalf("error connect sql. error : %v", err)
 	}
 
-	log.Println("success connect database")
-
-	log.Println("set database connection configuration")
+	log.Println("Set database connection configuration...")
 
 	sqlDB, err := db.DB()
 
 	if err != nil {
-		log.Fatalf("error set database connection config. error : %v", err)
+		log.Fatalf("Error set database connection configuration. error : %v", err)
 	}
 
 	sqlDB.SetMaxIdleConns(10)

@@ -12,9 +12,13 @@ import (
 
 // This is a struct that holds the configuration of the application.
 type AppConfigurationMap struct {
-	Port         int    // Port is the port number that the server will listen to.
-	IsProduction bool   // IsProduction is a flag that indicates whether the application is running in production mode.
-	DbUri        string // Database connection.
+	Port                 int    // Port is the port number that the server will listen to.
+	IsProduction         bool   // IsProduction is a flag that indicates whether the application is running in production mode.
+	DbUri                string // Database connection.
+	AccessTokenLifeTime  uint   // AccessTokenLifeTime is the lifetime of the access token in seconds.
+	RefreshTokenLifeTime uint   // RefreshTokenLifeTime is the lifetime of the refresh token in seconds.
+	PrivateKeyPath       string // Path to the private key file.
+	PublicKeyPath        string // Path to the public key file.
 }
 
 // config is a global variable that stores the loaded application configuration.
@@ -27,7 +31,7 @@ func Get() *AppConfigurationMap {
 
 // Load is a function that loads the application configuration from the environment variables.
 func Load() {
-	log.Println("load config from environment")
+	log.Println("Loading config from environment...")
 
 	// Load environment variables from a .env file.
 	err := godotenv.Load()
@@ -43,14 +47,38 @@ func Load() {
 		port = 8080
 	}
 
-	// Convert the IS_PRODUCTION environment variable to a boolean.
+	// Check if the application is running in production mode.
 	isProduction := utils.SafeCompareString(os.Getenv("IS_PRODUCTION"), "true")
+
+	AccessTokenLifeTime, err := strconv.Atoi(os.Getenv("ACCESS_TOKEN_LIFE_TIME"))
+	if err != nil {
+		AccessTokenLifeTime = 3600 // Default value of 1 hour
+	}
+
+	RefreshTokenLifeTime, err := strconv.Atoi(os.Getenv("REFRESH_TOKEN_LIFE_TIME"))
+	if err != nil {
+		RefreshTokenLifeTime = 86400 // Default value of 24 hours
+	}
+
+	PrivateKeyPath := os.Getenv("PRIVATE_KEY_PATH")
+	if PrivateKeyPath == "" {
+		log.Fatalf("PRIVATE_KEY_PATH environment variable is not set, check your .env file")
+	}
+
+	PublicKeyPath := os.Getenv("PUBLIC_KEY_PATH")
+	if PublicKeyPath == "" {
+		log.Fatalf("PUBLIC_KEY_PATH environment variable is not set, check your .env file")
+	}
 
 	// Set global variable config
 	config = &AppConfigurationMap{
-		Port:         port,
-		IsProduction: isProduction,
-		DbUri:        loadDatabaseConfig(),
+		Port:                 port,
+		IsProduction:         isProduction,
+		DbUri:                loadDatabaseConfig(),
+		AccessTokenLifeTime:  uint(AccessTokenLifeTime),
+		RefreshTokenLifeTime: uint(RefreshTokenLifeTime),
+		PrivateKeyPath:       PrivateKeyPath,
+		PublicKeyPath:        PublicKeyPath,
 	}
 }
 
@@ -71,7 +99,7 @@ func getFromEnv(key string) string {
 	value := os.Getenv(key)
 	if value == "" {
 		// If the environment variable is missing, log an error and terminate the application.
-		log.Fatalf("%s environment variable is not set", value)
+		log.Fatalf("%s Environment variable is not set", value)
 	}
 
 	return value
