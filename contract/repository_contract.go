@@ -12,6 +12,5 @@ type Repository struct {
 // }
 
 type AuthRepository interface {
-	GetUserByID(id int) (*model.User, error)
-	GetUserByEmail(email string) (*model.User, error)
+	GetUserByUsername(username string) (*model.User, error)
 }

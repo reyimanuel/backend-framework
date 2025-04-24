@@ -6,7 +6,10 @@ import (
 	"backend/pkg/errs"
 	"backend/pkg/helpers"
 	"backend/pkg/token"
+	"errors"
 	"fmt"
+	"log"
+	"net/http"
 	"strings"
 
 	"golang.org/x/crypto/bcrypt"
@@ -39,26 +42,26 @@ func (a *AuthService) Login(payload *dto.LoginRequest) (*dto.LoginResponse, erro
 	if len(missingFields) > 0 {
 		return nil, errs.BadRequest("missing required fields: " + strings.Join(missingFields, ", "))
 	}
-	user, err := a.AuthRepository.GetUserByEmail(payload.Username)
+	user, err := a.AuthRepository.GetUserByUsername(payload.Username)
 	if err != nil {
 		return nil, errs.NotFound("user not found")
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(payload.Password))
 	if err != nil {
-		return nil, errs.BadRequest("invalid password")
+		return nil, errors.New("password salah")
 	}
 
-	claims := map[string]any{
-		"id":       user.ID,
-		"email":    user.Email,
-		"username": user.Username,
-	}
-
-	accessToken, err := token.GenerateToken(claims, 3600)
+	accessToken, err := token.GenerateToken(&token.UserAuthToken{
+		ID:       user.ID,
+		Email:    user.Email,
+		Username: user.Username,
+	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to generate access token: %v", err)
 	}
+
+	log.Printf("Access Token: %s", accessToken)
 
 	refreshToken, err := token.GenerateRefreshToken(user.ID)
 	if err != nil {
@@ -66,7 +69,7 @@ func (a *AuthService) Login(payload *dto.LoginRequest) (*dto.LoginResponse, erro
 	}
 
 	response := &dto.LoginResponse{
-		StatusCode: 200,
+		StatusCode: http.StatusOK,
 		Message:    "login success",
 		Data: dto.TokenResponse{
 			AccessToken:  accessToken,

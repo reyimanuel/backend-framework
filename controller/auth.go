@@ -4,6 +4,8 @@ import (
 	"backend/contract"
 	"backend/dto"
 	"backend/pkg/errs"
+	"log"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
@@ -27,14 +29,18 @@ func (a *AuthController) initRoute(app *gin.RouterGroup) {
 func (a *AuthController) login(ctx *gin.Context) {
 	var payload dto.LoginRequest
 	if err := ctx.ShouldBindJSON(&payload); err != nil {
-		errs.BadRequest("invalid request payload")
+		errs.BadRequest("Invalid request payload")
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
 		return
 	}
 
-	result, err := a.service.Login(&payload)
+	response, err := a.service.Login(&payload)
 	if err != nil {
-		errs.BadRequest(err.Error())
+		errs.InternalServerError("Failed to login")
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to login"})
+		log.Printf("Error: %v", err)
 		return
 	}
-	ctx.JSON(result.StatusCode, result)
+
+	ctx.JSON(http.StatusOK, response)
 }

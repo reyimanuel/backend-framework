@@ -60,12 +60,12 @@ func Load() {
 		RefreshTokenLifeTime = 86400 // Default value of 24 hours
 	}
 
-	PrivateKeyPath := os.Getenv("PRIVATE_KEY_PATH")
+	PrivateKeyPath := os.Getenv("PRIVATE_KEY")
 	if PrivateKeyPath == "" {
 		log.Fatalf("PRIVATE_KEY_PATH environment variable is not set, check your .env file")
 	}
 
-	PublicKeyPath := os.Getenv("PUBLIC_KEY_PATH")
+	PublicKeyPath := os.Getenv("PUBLIC_KEY")
 	if PublicKeyPath == "" {
 		log.Fatalf("PUBLIC_KEY_PATH environment variable is not set, check your .env file")
 	}
