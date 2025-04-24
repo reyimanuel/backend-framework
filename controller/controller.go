@@ -22,6 +22,7 @@ type controller interface {
 func New(app *gin.Engine, service *contract.Service) {
 	allController := []controller{
 		// Add your controller here
+		&AuthController{},
 	}
 
 	// do not modify the code below there
