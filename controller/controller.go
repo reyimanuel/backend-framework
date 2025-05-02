@@ -2,7 +2,11 @@ package controller
 
 import (
 	"backend/contract"
+	"backend/middleware"
+	"backend/pkg/errs"
+	"errors"
 	"log"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
@@ -29,7 +33,20 @@ func New(app *gin.Engine, service *contract.Service) {
 	for _, c := range allController {
 		c.initService(service)
 		group := app.Group(c.getPrefix())
+		group.Use(middleware.CORSMiddleware())
 		c.initRoute(group)
 		log.Printf("initiate route %s\n", c.getPrefix())
+	}
+}
+
+// handlerError is a helper function to handle errors in the controller.
+// It checks if the error is of type MessageError and responds with the appropriate status code and message.
+func handlerError(ctx *gin.Context, err error) {
+	var messageErr errs.MessageError
+	if errors.As(err, &messageErr) {
+		ctx.JSON(messageErr.Status(), messageErr)
+	} else {
+		ctx.Error(err).SetType(gin.ErrorTypePrivate)
+		ctx.JSON(http.StatusInternalServerError, errs.InternalServerError("Internal Server Error"))
 	}
 }
