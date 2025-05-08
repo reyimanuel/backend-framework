@@ -6,7 +6,6 @@ import (
 	"backend/pkg/errs"
 	"backend/pkg/helpers"
 	"backend/pkg/token"
-	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -44,12 +43,12 @@ func (a *AuthService) Login(payload *dto.LoginRequest) (*dto.LoginResponse, erro
 	}
 	user, err := a.AuthRepository.GetUserByUsername(payload.Username)
 	if err != nil {
-		return nil, errs.NotFound("user not found")
+		return nil, fmt.Errorf("failed to get user by username: %v", err)
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(payload.Password))
 	if err != nil {
-		return nil, errors.New("password salah")
+		return nil, errs.Unauthorized("invalid username or password")
 	}
 
 	accessToken, err := token.GenerateToken(&token.UserAuthToken{

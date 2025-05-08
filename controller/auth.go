@@ -13,28 +13,28 @@ type AuthController struct {
 	service contract.AuthService
 }
 
-func (a *AuthController) getPrefix() string {
+func (a *AuthController) GetPrefix() string {
 	return "/auth"
 }
 
-func (a *AuthController) initService(service *contract.Service) {
+func (a *AuthController) InitService(service *contract.Service) {
 	a.service = service.Auth
 }
 
-func (a *AuthController) initRoute(app *gin.RouterGroup) {
+func (a *AuthController) InitRoute(app *gin.RouterGroup) {
 	app.POST("/login", a.login)
 }
 
 func (a *AuthController) login(ctx *gin.Context) {
 	var payload dto.LoginRequest
 	if err := ctx.ShouldBindJSON(&payload); err != nil {
-		handlerError(ctx, errs.BadRequest("invalid request payload"))
+		HandlerError(ctx, errs.BadRequest("invalid request payload"))
 		return
 	}
 
 	response, err := a.service.Login(&payload)
 	if err != nil {
-		handlerError(ctx, err)
+		HandlerError(ctx, err)
 		return
 	}
 
