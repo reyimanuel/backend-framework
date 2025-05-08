@@ -4,6 +4,7 @@ import (
 	"backend/config"
 	"backend/controller"
 	"backend/internal/database"
+	"backend/middleware"
 	"backend/migrations"
 	"backend/repository"
 	"backend/service"
@@ -79,6 +80,8 @@ func Run() {
 
 	// Create a new Gin engine instance
 	r := gin.New()
+
+	r.Use(middleware.CORSMiddleware())
 
 	// Register middleware for logging and error recovery
 	r.Use(gin.Logger())

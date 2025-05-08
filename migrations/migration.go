@@ -18,6 +18,7 @@ func getMigrations() []migration {
 	return []migration{
 		getCreateUsersTable(), // Implementing the users table migration
 		getInsertUsersTable(), // Implementing the users table data migration
+		getCreateTeamTable(),
 		// Add your migrations here
 	}
 }
