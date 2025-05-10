@@ -3,10 +3,12 @@ package main
 import (
 	"backend/config"
 	"backend/internal/server"
+	"backend/pkg/token"
 )
 
 func main() {
 	config.Load()
+	token.Load()
 	server.Run()
 }
 
