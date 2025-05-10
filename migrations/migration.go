@@ -16,9 +16,10 @@ type migration interface {
 // getMigrations returns a list of migrations that need to be executed.
 func getMigrations() []migration {
 	return []migration{
-		getCreateUsersTable(), // Implementing the users table migration
-		getInsertUsersTable(), // Implementing the users table data migration
-		getCreateTeamTable(),
+		GetCreateUsersTable(), // Implementing the users table migration
+		GetInsertUsersTable(), // Implementing the users table data migration
+		GetCreateTeamTable(),
+		GetCreateEventTable(),
 		// Add your migrations here
 	}
 }

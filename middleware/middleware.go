@@ -2,6 +2,8 @@ package middleware
 
 import (
 	"backend/pkg/token"
+	"fmt"
+	"net/http"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -12,7 +14,7 @@ func MiddlewareLogin(ctx *gin.Context) {
 	parts := strings.Split(bearerToken, " ")
 
 	if len(parts) != 2 || parts[0] != "Bearer" {
-		ctx.AbortWithStatusJSON(401, gin.H{"error": "Invalid token format"})
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Invalid token format"})
 		ctx.Abort()
 		return
 	}
@@ -21,7 +23,8 @@ func MiddlewareLogin(ctx *gin.Context) {
 	// Call ValidateAccessToken function from the 'token' package
 	user, err := token.ValidateAccessToken(tokenStr)
 	if err != nil {
-		ctx.AbortWithStatusJSON(401, gin.H{"error": "Invalid token format"})
+		fmt.Println("Error validating token:", err)
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Invalid token format"})
 		ctx.Abort()
 		return
 	}

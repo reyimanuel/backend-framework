@@ -2,21 +2,21 @@ package migrations
 
 import "database/sql"
 
-type createTeamTable struct{}
+type CreateTeamTable struct{}
 
-func getCreateTeamTable() migration {
-	return &createTeamTable{}
+func GetCreateTeamTable() migration {
+	return &CreateTeamTable{}
 }
 
-func (c *createTeamTable) SkipProduction() bool {
+func (c *CreateTeamTable) SkipProduction() bool {
 	return false
 }
 
-func (c *createTeamTable) Name() string {
+func (c *CreateTeamTable) Name() string {
 	return "create-team"
 }
 
-func (c *createTeamTable) Up(conn *sql.Tx) error {
+func (c *CreateTeamTable) Up(conn *sql.Tx) error {
 	_, err := conn.Exec(`CREATE TABLE team (
 		id SERIAL PRIMARY KEY,
 		name VARCHAR(255) NOT NULL UNIQUE,
@@ -31,7 +31,7 @@ func (c *createTeamTable) Up(conn *sql.Tx) error {
 	return err
 }
 
-func (c *createTeamTable) Down(conn *sql.Tx) error {
+func (c *CreateTeamTable) Down(conn *sql.Tx) error {
 	_, err := conn.Exec(`DROP TABLE IF EXISTS team`)
 	return err
 }

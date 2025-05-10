@@ -14,7 +14,7 @@ func GenerateToken(data *UserAuthToken) (string, error) {
 	claims := token.Claims.(jwt.MapClaims)
 	claims["data"] = data
 	claims["iss"] = "hmeftunsrat"
-	claims["iat"] = time.Now()
+	claims["iat"] = time.Now().Unix()
 	claims["exp"] = time.Now().Add(time.Duration(jwtConfig.jwtLifeTime) * time.Second).Unix()
 
 	// Sign the token and return
@@ -29,7 +29,7 @@ func GenerateRefreshToken(id uint64) (string, error) {
 		"id": id,
 	}
 	claims["iss"] = "hmeftunsrat"
-	claims["iat"] = time.Now()
+	claims["iat"] = time.Now().Unix()
 	claims["exp"] = time.Now().Add(time.Duration(jwtConfig.jwtLifeTime) * time.Second).Unix()
 
 	return token.SignedString(jwtConfig.privateKey)
