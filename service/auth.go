@@ -43,7 +43,7 @@ func (a *AuthService) Login(payload *dto.LoginRequest) (*dto.LoginResponse, erro
 	}
 	user, err := a.AuthRepository.GetUserByUsername(payload.Username)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get user by username: %v", err)
+		return nil, errs.Unauthorized("invalid username or password")
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(payload.Password))

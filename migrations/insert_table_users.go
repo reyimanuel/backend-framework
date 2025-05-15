@@ -19,7 +19,7 @@ func (i *InsertUsersTable) Name() string {
 func (i *InsertUsersTable) Up(conn *sql.Tx) error {
 	_, err := conn.Exec(`
 		INSERT INTO users (email, username, password, nim) VALUES
-		('reyimanuel32@gmail.com', 'reyimanuel32', '$2a$10$tCPHIA36fL5O2Fss23Y1eOZhOj8RiaJQyl1Ls6nA3..Q2SpQILJJC', '220211060171')
+		('reyimanuel32@gmail.com', 'admin', '$2a$10$xa8VurMelH8U4jxnpqlXfe6Ct5psaGNoLgYihXpEzFU3QbPwGIH7u', '220211060171')
 	`)
 
 	return err

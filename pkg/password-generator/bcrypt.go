@@ -6,6 +6,8 @@ import (
 	"log"
 	"os"
 
+	"strings"
+
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -20,7 +22,7 @@ func main() {
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Print("Enter your password: ")
 	password, _ := reader.ReadString('\n')
-	password = password[:len(password)-1]
+	password = strings.TrimSpace(password)
 
 	hash, err := Generate(password)
 	if err != nil {
