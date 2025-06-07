@@ -129,3 +129,13 @@ PUBLIC_KEY=
    ```
 
 2. The server will start at `http://localhost:8080` (or the configured PORT)
+
+> [!note]
+> Database operation
+```bash
+go run main.go -down--all
+```
+> Database will be automatically migrate using air
+```bash
+air
+```
