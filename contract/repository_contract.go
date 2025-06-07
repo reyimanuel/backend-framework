@@ -3,9 +3,9 @@ package contract
 import "backend/model"
 
 type Repository struct {
-	AuthRepository AuthRepository
-	TeamRepository TeamRepository
-	// Add your repository methods here
+	AuthRepository  AuthRepository
+	TeamRepository  TeamRepository
+	EventRepository EventRepository
 }
 
 // type exampleRepository interface {
@@ -23,4 +23,9 @@ type TeamRepository interface {
 	UpdateMember(id uint64, team *model.Team) error
 	DeleteMember(id uint64) error
 	GetMemberByDivision(division string) ([]model.Team, error)
+}
+type EventRepository interface {
+	GetAllEvent() ([]model.Event, error)
+	GetEventByID(id uint64) (*model.Event, error)
+	CreateEvent(event *model.Event) (*model.Event, error)
 }

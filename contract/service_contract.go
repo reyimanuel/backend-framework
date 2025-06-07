@@ -4,8 +4,9 @@ import "backend/dto"
 
 type Service struct {
 	// Add your service methods here
-	Auth AuthService
-	Team TeamService
+	Auth  AuthService
+	Team  TeamService
+	Event EventService
 }
 
 // type exampleService interface {
@@ -23,4 +24,10 @@ type TeamService interface {
 	CreateMember(team *dto.TeamRequest) (*dto.TeamResponse, error)
 	UpdateMember(id uint64, team *dto.TeamRequest) (*dto.TeamResponse, error)
 	DeleteMember(id uint64) (*dto.TeamResponse, error)
+}
+
+type EventService interface {
+	GetAllEvent() (*dto.EventResponse, error)
+	GetEventByID(id uint64) (*dto.EventResponse, error)
+	CreateEvent(payload *dto.EventRequest) (*dto.EventResponse, error)
 }
