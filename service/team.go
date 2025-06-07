@@ -23,7 +23,7 @@ func ImplTeamService(repo *contract.Repository) contract.TeamService {
 func (t *TeamService) GetMemberByDivision(division string) (*dto.TeamResponse, error) {
 	teams, err := t.TeamRepository.GetMemberByDivision(division)
 	if err != nil {
-		return nil, errs.NotFound("no members found in this division")
+		return nil, errs.NotFound("No members found in this division")
 	}
 
 	data := []dto.TeamData{}
@@ -40,7 +40,7 @@ func (t *TeamService) GetMemberByDivision(division string) (*dto.TeamResponse, e
 
 	response := &dto.TeamResponse{
 		StatusCode: http.StatusOK,
-		Message:    "Data retrieved successfully",
+		Message:    "Member data retrieved successfully",
 		Data:       data,
 	}
 
@@ -50,7 +50,7 @@ func (t *TeamService) GetMemberByDivision(division string) (*dto.TeamResponse, e
 func (t *TeamService) GetAllMember() (*dto.TeamResponse, error) {
 	teams, err := t.TeamRepository.GetAllMember()
 	if err != nil {
-		return nil, errs.NotFound("no members found")
+		return nil, errs.NotFound("No members found")
 	}
 
 	data := []dto.TeamData{}
@@ -67,7 +67,7 @@ func (t *TeamService) GetAllMember() (*dto.TeamResponse, error) {
 
 	response := &dto.TeamResponse{
 		StatusCode: http.StatusOK,
-		Message:    "Data retrieved successfully",
+		Message:    "Member data retrieved successfully",
 		Data:       data,
 	}
 
@@ -77,7 +77,7 @@ func (t *TeamService) GetAllMember() (*dto.TeamResponse, error) {
 func (t *TeamService) GetMemberByID(id uint64) (*dto.TeamResponse, error) {
 	team, err := t.TeamRepository.GetMemberByID(id)
 	if err != nil {
-		return nil, errs.NotFound("member not found")
+		return nil, errs.NotFound("Member not found")
 	}
 
 	data := dto.TeamData{
@@ -91,7 +91,7 @@ func (t *TeamService) GetMemberByID(id uint64) (*dto.TeamResponse, error) {
 
 	response := &dto.TeamResponse{
 		StatusCode: http.StatusOK,
-		Message:    "Data retrieved successfully",
+		Message:    "Member data retrieved successfully",
 		Data:       []dto.TeamData{data},
 	}
 
@@ -119,7 +119,7 @@ func (t *TeamService) CreateMember(payload *dto.TeamRequest) (*dto.TeamResponse,
 
 	response := &dto.TeamResponse{
 		StatusCode: http.StatusCreated,
-		Message:    "member created successfully",
+		Message:    "Member data created successfully",
 		Data: []dto.TeamData{
 			{
 				ID:        newTeam.ID,
@@ -143,12 +143,12 @@ func (t *TeamService) UpdateMember(id uint64, payload *dto.TeamRequest) (*dto.Te
 		return nil, validPayload
 	}
 
-	team, err := t.TeamRepository.GetMemberByID(id)
+	_, err := t.TeamRepository.GetMemberByID(id)
 	if err != nil {
-		return nil, errs.NotFound("member not found")
+		return nil, errs.NotFound("Member data not found")
 	}
 
-	NewTeam := &model.Team{
+	team := &model.Team{
 		Name:     payload.Name,
 		Role:     payload.Role,
 		Division: payload.Division,
@@ -156,22 +156,23 @@ func (t *TeamService) UpdateMember(id uint64, payload *dto.TeamRequest) (*dto.Te
 		Status:   payload.Status,
 	}
 
-	err = t.TeamRepository.UpdateMember(id, NewTeam)
+	err = t.TeamRepository.UpdateMember(id, team)
 	if err != nil {
-		return nil, fmt.Errorf("failed to update member")
+		return nil, fmt.Errorf("failed to update member: %w", err)
 	}
 
 	response := &dto.TeamResponse{
 		StatusCode: http.StatusOK,
-		Message:    "member updated successfully",
+		Message:    "Member data updated successfully",
 		Data: []dto.TeamData{
 			{
-				ID:       team.ID,
-				Name:     team.Name,
-				Role:     team.Role,
-				Division: team.Division,
-				Year:     team.Year,
-				Status:   team.Status,
+				ID:        team.ID,
+				Name:      team.Name,
+				Role:      team.Role,
+				Division:  team.Division,
+				Year:      team.Year,
+				Status:    team.Status,
+				CreatedAt: team.CreatedAt,
 			},
 		},
 	}
@@ -187,7 +188,7 @@ func (t *TeamService) DeleteMember(id uint64) (*dto.TeamResponse, error) {
 
 	response := &dto.TeamResponse{
 		StatusCode: http.StatusOK,
-		Message:    "member deleted successfully",
+		Message:    "Member data deleted successfully",
 	}
 
 	return response, nil

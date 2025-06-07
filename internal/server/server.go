@@ -87,6 +87,8 @@ func Run() {
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
 
+	r.Static("/static", "./uploads")
+
 	// Set up HTTP server settings
 	srv := &http.Server{
 		Addr:         fmt.Sprintf(":%d", cfg.Port),
