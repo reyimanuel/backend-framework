@@ -10,6 +10,7 @@ import (
 	"mime/multipart"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -116,26 +117,53 @@ func (g *GalleryService) CreateGallery(ctx *gin.Context, payload *dto.GalleryReq
 	return response, nil
 }
 
-func (g *GalleryService) UpdateGallery(id uint64, payload *dto.GalleryRequest, imageURL string) (*dto.GalleryResponse, error) {
-	validPayload := helpers.ValidateStruct(payload)
-	if validPayload != nil {
-		return nil, validPayload
-	}
-
-	_, err := g.GalleryRepository.GetGalleryByID(id)
+func (g *GalleryService) UpdateGallery(ctx *gin.Context, id uint64, payload *dto.GalleryRequest, file *multipart.FileHeader) (*dto.GalleryResponse, error) {
+	oldGallery, err := g.GalleryRepository.GetGalleryByID(id)
 	if err != nil {
 		return nil, errs.NotFound("Gallery data not found")
 	}
 
-	gallery := &model.Gallery{
-		Name:        payload.Name,
-		Description: payload.Description,
-		ImageURL:    imageURL,
+	if payload.Name == "" && payload.Description == "" && file == nil {
+		return nil, errs.BadRequest("At least one field must be updated")
 	}
 
-	err = g.GalleryRepository.UpdateGallery(id, gallery)
-	if err != nil {
+	updatedName := oldGallery.Name
+	updatedDesc := oldGallery.Description
+	updatedImage := oldGallery.ImageURL
+
+	if payload.Name != "" {
+		updatedName = payload.Name
+	}
+	if payload.Description != "" {
+		updatedDesc = payload.Description
+	}
+
+	var newImagePath, oldImagePath string
+	if file != nil {
+		imageName := fmt.Sprintf("%d_%s", time.Now().UnixNano(), file.Filename)
+		newImagePath = fmt.Sprintf("static/%s", imageName)
+		if err := ctx.SaveUploadedFile(file, newImagePath); err != nil {
+			return nil, fmt.Errorf("failed to save image: %w", err)
+		}
+		oldImagePath = strings.Replace(oldGallery.ImageURL, "/static/", "static/", 1)
+		updatedImage = fmt.Sprintf("/static/%s", imageName)
+	}
+
+	updateData := &model.Gallery{
+		Name:        updatedName,
+		Description: updatedDesc,
+		ImageURL:    updatedImage,
+	}
+
+	if err := g.GalleryRepository.UpdateGallery(id, updateData); err != nil {
+		if file != nil {
+			_ = os.Remove(newImagePath)
+		}
 		return nil, fmt.Errorf("failed to update gallery: %w", err)
+	}
+
+	if file != nil {
+		_ = os.Remove(oldImagePath)
 	}
 
 	response := &dto.GalleryResponse{
@@ -143,10 +171,10 @@ func (g *GalleryService) UpdateGallery(id uint64, payload *dto.GalleryRequest, i
 		Message:    "Gallery data updated successfully",
 		Data: []dto.GalleryData{
 			{
-				ID:          gallery.ID,
-				Name:        gallery.Name,
-				Description: gallery.Description,
-				ImageURL:    gallery.ImageURL,
+				ID:          id,
+				Name:        updateData.Name,
+				Description: updateData.Description,
+				ImageURL:    updateData.ImageURL,
 			},
 		},
 	}
