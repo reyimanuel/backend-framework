@@ -11,6 +11,6 @@ func New(db *gorm.DB) *contract.Repository {
 		AuthRepository:    ImplAuthRepository(db),
 		TeamRepository:    ImplTeamRepository(db),
 		GalleryRepository: ImplGalleryRepository(db),
-		// Add your repository methods here
+		EventRepository:   ImplEventRepository(db),
 	}
 }

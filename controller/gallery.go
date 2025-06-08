@@ -5,10 +5,8 @@ import (
 	"backend/dto"
 	"backend/middleware"
 	"backend/pkg/errs"
-	"fmt"
 	"net/http"
 	"strconv"
-	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -94,28 +92,16 @@ func (g *GalleryController) UpdateGallery(ctx *gin.Context) {
 		return
 	}
 
-	var payload dto.GalleryRequest
-	if err := ctx.ShouldBindJSON(&payload); err != nil {
-		HandlerError(ctx, err)
-		return
+	name := ctx.PostForm("name")
+	description := ctx.PostForm("description")
+	file, _ := ctx.FormFile("image")
+
+	payload := dto.GalleryRequest{
+		Name:        name,
+		Description: description,
 	}
 
-	file, err := ctx.FormFile("image")
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, errs.BadRequest("Image is required"))
-		return
-	}
-
-	imageName := fmt.Sprintf("%d_%s", time.Now().UnixNano(), file.Filename)
-	imagePath := fmt.Sprintf("static/%s", imageName)
-	if err := ctx.SaveUploadedFile(file, imagePath); err != nil {
-		ctx.JSON(http.StatusInternalServerError, errs.InternalServerError("Failed to save image"))
-		return
-	}
-
-	imageURL := fmt.Sprintf("/static/%s", imageName)
-
-	response, err := g.service.UpdateGallery(idUint, &payload, imageURL)
+	response, err := g.service.UpdateGallery(ctx, idUint, &payload, file)
 	if err != nil {
 		HandlerError(ctx, err)
 		return

@@ -12,6 +12,7 @@ type Service struct {
 	Auth    AuthService
 	Team    TeamService
 	Gallery GalleryService
+	Event   EventService
 }
 
 // type exampleService interface {
@@ -35,6 +36,14 @@ type GalleryService interface {
 	GetGalleryByID(galleryID uint64) (*dto.GalleryResponse, error)
 	GetAllGalleries() (*dto.GalleryResponse, error)
 	CreateGallery(ctx *gin.Context, payload *dto.GalleryRequest, file *multipart.FileHeader) (*dto.GalleryResponse, error)
-	UpdateGallery(id uint64, payload *dto.GalleryRequest, imageURL string) (*dto.GalleryResponse, error)
+	UpdateGallery(ctx *gin.Context, id uint64, payload *dto.GalleryRequest, file *multipart.FileHeader) (*dto.GalleryResponse, error)
 	DeleteGallery(id uint64) (*dto.GalleryResponse, error)
+}
+
+type EventService interface {
+	GetAllEvent() (*dto.EventResponse, error)
+	GetEventByID(id uint64) (*dto.EventResponse, error)
+	CreateEvent(ctx *gin.Context, payload *dto.EventRequest, file *multipart.FileHeader) (*dto.EventResponse, error)
+	UpdateEvent(ctx *gin.Context, id uint64, payload *dto.EventRequest, file *multipart.FileHeader) (*dto.EventResponse, error)
+	DeleteEvent(id uint64) (*dto.EventResponse, error)
 }

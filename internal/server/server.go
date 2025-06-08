@@ -87,7 +87,7 @@ func Run() {
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
 
-	r.Static("/static", "./uploads")
+	r.Static("/static", "./static")
 
 	// Set up HTTP server settings
 	srv := &http.Server{

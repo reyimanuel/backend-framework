@@ -19,6 +19,7 @@ type AppConfigurationMap struct {
 	RefreshTokenLifeTime uint   // RefreshTokenLifeTime is the lifetime of the refresh token in seconds.
 	PrivateKeyPath       string // Path to the private key file.
 	PublicKeyPath        string // Path to the public key file.
+	BaseURL              string // BaseURL is the base URL of the application, used for generating absolute URLs.
 }
 
 // config is a global variable that stores the loaded application configuration.
@@ -70,6 +71,11 @@ func Load() {
 		log.Fatalf("PUBLIC_KEY_PATH environment variable is not set, check your .env file")
 	}
 
+	BaseURL := os.Getenv("BASE_URL")
+	if BaseURL == "" {
+		BaseURL = fmt.Sprintf("http://localhost:%d", port)
+	}
+
 	// Set global variable config
 	config = &AppConfigurationMap{
 		Port:                 port,
@@ -79,6 +85,7 @@ func Load() {
 		RefreshTokenLifeTime: uint(RefreshTokenLifeTime),
 		PrivateKeyPath:       PrivateKeyPath,
 		PublicKeyPath:        PublicKeyPath,
+		BaseURL:              BaseURL,
 	}
 }
 

@@ -29,6 +29,7 @@ func New(app *gin.Engine, service *contract.Service) {
 		&AuthController{},
 		&TeamController{},
 		&GalleryController{},
+		&EventController{},
 	}
 
 	// do not modify the code below there

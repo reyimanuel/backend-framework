@@ -27,6 +27,7 @@ func (c *CreateEventTable) Up(conn *sql.Tx) error {
 			event_description TEXT,
 			event_organizer VARCHAR(255) NOT NULL,
 			event_status VARCHAR(50) NOT NULL,
+			event_image_url VARCHAR(255),
 			created_at TIMESTAMP NOT NULL DEFAULT NOW(),
 			updated_at TIMESTAMP NOT NULL DEFAULT NOW()
 		)

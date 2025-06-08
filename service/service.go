@@ -8,5 +8,6 @@ func New(repo *contract.Repository) *contract.Service {
 		Auth:    ImplAuthService(repo),
 		Team:    ImplTeamService(repo),
 		Gallery: ImplGalleryService(repo),
+		Event:   ImplEventService(repo),
 	}
 }

@@ -5,8 +5,8 @@ import "backend/model"
 type Repository struct {
 	AuthRepository    AuthRepository
 	TeamRepository    TeamRepository
+	EventRepository   EventRepository
 	GalleryRepository GalleryRepository
-	// Add your repository methods here
 }
 
 // type exampleRepository interface {
@@ -32,4 +32,11 @@ type GalleryRepository interface {
 	CreateGallery(gallery *model.Gallery) (*model.Gallery, error)
 	UpdateGallery(id uint64, gallery *model.Gallery) error
 	DeleteGallery(id uint64) error
+}
+type EventRepository interface {
+	GetAllEvent() ([]model.Event, error)
+	GetEventByID(id uint64) (*model.Event, error)
+	CreateEvent(event *model.Event) (*model.Event, error)
+	UpdateEvent(id uint64, event *model.Event) error
+	DeleteEvent(id uint64) error
 }
