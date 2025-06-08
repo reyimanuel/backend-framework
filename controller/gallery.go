@@ -94,7 +94,7 @@ func (g *GalleryController) UpdateGallery(ctx *gin.Context) {
 
 	name := ctx.PostForm("name")
 	description := ctx.PostForm("description")
-	file, _ := ctx.FormFile("image") // boleh nil
+	file, _ := ctx.FormFile("image")
 
 	payload := dto.GalleryRequest{
 		Name:        name,

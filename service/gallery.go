@@ -1,6 +1,7 @@
 package service
 
 import (
+	"backend/config"
 	"backend/contract"
 	"backend/dto"
 	"backend/model"
@@ -18,11 +19,13 @@ import (
 
 type GalleryService struct {
 	GalleryRepository contract.GalleryRepository
+	baseURL           string
 }
 
 func ImplGalleryService(repo *contract.Repository) contract.GalleryService {
 	return &GalleryService{
 		GalleryRepository: repo.GalleryRepository,
+		baseURL:           config.Get().BaseURL,
 	}
 }
 
@@ -60,7 +63,9 @@ func (g *GalleryService) GetAllGalleries() (*dto.GalleryResponse, error) {
 			ID:          gallery.ID,
 			Name:        gallery.Name,
 			Description: gallery.Description,
-			ImageURL:    gallery.ImageURL,
+			ImageURL:    fmt.Sprintf("%s%s", g.baseURL, gallery.ImageURL),
+			CreatedAt:   gallery.CreatedAt,
+			UpdatedAt:   gallery.UpdatedAt,
 		})
 	}
 
@@ -107,7 +112,7 @@ func (g *GalleryService) CreateGallery(ctx *gin.Context, payload *dto.GalleryReq
 				ID:          newGallery.ID,
 				Name:        newGallery.Name,
 				Description: newGallery.Description,
-				ImageURL:    newGallery.ImageURL,
+				ImageURL:    fmt.Sprintf("%s%s", g.baseURL, newGallery.ImageURL),
 				CreatedAt:   newGallery.CreatedAt,
 				UpdatedAt:   newGallery.UpdatedAt,
 			},
@@ -127,18 +132,12 @@ func (g *GalleryService) UpdateGallery(ctx *gin.Context, id uint64, payload *dto
 		return nil, errs.BadRequest("At least one field must be updated")
 	}
 
-	updatedName := oldGallery.Name
-	updatedDesc := oldGallery.Description
-	updatedImage := oldGallery.ImageURL
+	var (
+		newImagePath string
+		oldImagePath string
+		updatedImage = oldGallery.ImageURL
+	)
 
-	if payload.Name != "" {
-		updatedName = payload.Name
-	}
-	if payload.Description != "" {
-		updatedDesc = payload.Description
-	}
-
-	var newImagePath, oldImagePath string
 	if file != nil {
 		imageName := fmt.Sprintf("%d_%s", time.Now().UnixNano(), file.Filename)
 		newImagePath = fmt.Sprintf("static/%s", imageName)
@@ -149,13 +148,13 @@ func (g *GalleryService) UpdateGallery(ctx *gin.Context, id uint64, payload *dto
 		updatedImage = fmt.Sprintf("/static/%s", imageName)
 	}
 
-	updateData := &model.Gallery{
-		Name:        updatedName,
-		Description: updatedDesc,
+	updateGallery := &model.Gallery{
+		Name:        helpers.Choose(payload.Name, oldGallery.Name),
+		Description: helpers.Choose(payload.Description, oldGallery.Description),
 		ImageURL:    updatedImage,
 	}
 
-	if err := g.GalleryRepository.UpdateGallery(id, updateData); err != nil {
+	if err := g.GalleryRepository.UpdateGallery(id, updateGallery); err != nil {
 		if file != nil {
 			_ = os.Remove(newImagePath)
 		}
@@ -172,9 +171,11 @@ func (g *GalleryService) UpdateGallery(ctx *gin.Context, id uint64, payload *dto
 		Data: []dto.GalleryData{
 			{
 				ID:          id,
-				Name:        updateData.Name,
-				Description: updateData.Description,
-				ImageURL:    updateData.ImageURL,
+				Name:        updateGallery.Name,
+				Description: updateGallery.Description,
+				ImageURL:    fmt.Sprintf("%s%s", g.baseURL, updatedImage),
+				CreatedAt:   updateGallery.CreatedAt,
+				UpdatedAt:   updateGallery.UpdatedAt,
 			},
 		},
 	}

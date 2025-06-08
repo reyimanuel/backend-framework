@@ -22,3 +22,5 @@ tmp
 
 # Key
 *.pem
+
+static/*

@@ -2,6 +2,8 @@ package helpers
 
 import (
 	"backend/pkg/errs"
+	"strings"
+	"time"
 
 	"github.com/go-playground/validator/v10"
 )
@@ -19,4 +21,18 @@ func ValidateStruct(payload any) error {
 	}
 
 	return nil
+}
+
+func Choose(newVal, oldVal string) string {
+	if strings.TrimSpace(newVal) != "" {
+		return newVal
+	}
+	return oldVal
+}
+
+func ChooseTime(newValue, oldValue time.Time) time.Time {
+	if !newValue.IsZero() {
+		return newValue
+	}
+	return oldValue
 }

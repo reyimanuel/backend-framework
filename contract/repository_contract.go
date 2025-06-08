@@ -37,4 +37,6 @@ type EventRepository interface {
 	GetAllEvent() ([]model.Event, error)
 	GetEventByID(id uint64) (*model.Event, error)
 	CreateEvent(event *model.Event) (*model.Event, error)
+	UpdateEvent(id uint64, event *model.Event) error
+	DeleteEvent(id uint64) error
 }

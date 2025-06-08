@@ -43,5 +43,7 @@ type GalleryService interface {
 type EventService interface {
 	GetAllEvent() (*dto.EventResponse, error)
 	GetEventByID(id uint64) (*dto.EventResponse, error)
-	CreateEvent(payload *dto.EventRequest) (*dto.EventResponse, error)
+	CreateEvent(ctx *gin.Context, payload *dto.EventRequest, file *multipart.FileHeader) (*dto.EventResponse, error)
+	UpdateEvent(ctx *gin.Context, id uint64, payload *dto.EventRequest, file *multipart.FileHeader) (*dto.EventResponse, error)
+	DeleteEvent(id uint64) (*dto.EventResponse, error)
 }

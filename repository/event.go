@@ -24,6 +24,7 @@ func (t *EventRepository) GetAllEvent() ([]model.Event, error) {
 	}
 	return event, nil
 }
+
 func (t *EventRepository) GetEventByID(id uint64) (*model.Event, error) {
 	var event model.Event
 	if err := t.db.Where("id = ?", id).First(&event).Error; err != nil {
@@ -37,4 +38,20 @@ func (t *EventRepository) CreateEvent(event *model.Event) (*model.Event, error) 
 		return nil, err
 	}
 	return event, nil
+}
+
+func (t *EventRepository) UpdateEvent(id uint64, event *model.Event) error {
+	err := t.db.Model(event).Where("id = ?", id).Updates(event).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (t *EventRepository) DeleteEvent(id uint64) error {
+	var event model.Event
+	if err := t.db.Where("id = ?", id).Delete(&event).Error; err != nil {
+		return err
+	}
+	return nil
 }
