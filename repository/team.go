@@ -41,7 +41,8 @@ func (t *TeamRepository) CreateMember(team *model.Team) (*model.Team, error) {
 }
 
 func (t *TeamRepository) UpdateMember(id uint64, team *model.Team) error {
-	return t.db.Where("id = ?", id).Updates(&team).Error
+	err := t.db.Model(team).Where("id = ?", id).Updates(team).Error
+	return err
 }
 
 func (t *TeamRepository) DeleteMember(id uint64) error {

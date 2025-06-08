@@ -8,8 +8,9 @@ import (
 
 func New(db *gorm.DB) *contract.Repository {
 	return &contract.Repository{
-		AuthRepository: ImplAuthRepository(db),
-		TeamRepository: ImplTeamRepository(db),
-		// Add your repository methods here
+		AuthRepository:    ImplAuthRepository(db),
+		TeamRepository:    ImplTeamRepository(db),
+		GalleryRepository: ImplGalleryRepository(db),
+		EventRepository:   ImplEventRepository(db),
 	}
 }

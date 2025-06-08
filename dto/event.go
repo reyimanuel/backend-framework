@@ -1,16 +1,18 @@
 package dto
 
+import "time"
+
 type EventData struct {
-	ID               uint64 `json:"id" gorm:"primaryKey"`
-	EventName        string `json:"event_name" gorm:"not null"`
-	EventDate        string `json:"event_date" gorm:"not null"`
-	EventTime        string `json:"event_time" gorm:"not null"`
-	EventLocation    string `json:"event_location" gorm:"not null"`
-	EventDescription string `json:"event_description"`
-	EventOrganizer   string `json:"event_organizer" gorm:"not null"`
-	EventStatus      string `json:"event_status" gorm:"not null"`
-	CreatedAt        string `json:"created_at"`
-	UpdatedAt        string `json:"updated_at"`
+	ID               uint64    `json:"id" gorm:"primaryKey"`
+	EventName        string    `json:"event_name" gorm:"not null"`
+	EventDate        string    `json:"event_date" gorm:"not null"`
+	EventTime        string    `json:"event_time" gorm:"not null"`
+	EventLocation    string    `json:"event_location" gorm:"not null"`
+	EventDescription string    `json:"event_description"`
+	EventOrganizer   string    `json:"event_organizer" gorm:"not null"`
+	EventStatus      string    `json:"event_status" gorm:"not null"`
+	CreatedAt        time.Time `json:"created_at"`
+	UpdatedAt        time.Time `json:"updated_at"`
 }
 
 type EventRequest struct {
