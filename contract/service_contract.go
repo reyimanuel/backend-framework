@@ -36,7 +36,7 @@ type GalleryService interface {
 	GetGalleryByID(galleryID uint64) (*dto.GalleryResponse, error)
 	GetAllGalleries() (*dto.GalleryResponse, error)
 	CreateGallery(ctx *gin.Context, payload *dto.GalleryRequest, file *multipart.FileHeader) (*dto.GalleryResponse, error)
-	UpdateGallery(id uint64, payload *dto.GalleryRequest, imageURL string) (*dto.GalleryResponse, error)
+	UpdateGallery(ctx *gin.Context, id uint64, payload *dto.GalleryRequest, file *multipart.FileHeader) (*dto.GalleryResponse, error)
 	DeleteGallery(id uint64) (*dto.GalleryResponse, error)
 }
 
