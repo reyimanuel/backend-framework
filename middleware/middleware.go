@@ -13,6 +13,12 @@ func MiddlewareLogin(ctx *gin.Context) {
 	bearerToken := ctx.GetHeader("Authorization")
 	parts := strings.Split(bearerToken, " ")
 
+	if len(parts) == 0 {
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Authorization header is required"})
+		ctx.Abort()
+		return
+	}
+
 	if len(parts) != 2 || parts[0] != "Bearer" {
 		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Invalid token format"})
 		ctx.Abort()

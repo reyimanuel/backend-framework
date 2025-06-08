@@ -17,9 +17,9 @@ func ImplAuthRepository(db *gorm.DB) contract.AuthRepository {
 	}
 }
 
-func (u *AuthRepository) GetUserByUsername(username string) (*model.User, error) {
+func (a *AuthRepository) GetUserByUsername(username string) (*model.User, error) {
 	var user model.User
-	if err := u.db.Where("username = ?", username).First(&user).Error; err != nil {
+	if err := a.db.Where("username = ?", username).First(&user).Error; err != nil {
 		return nil, err
 	}
 	return &user, nil

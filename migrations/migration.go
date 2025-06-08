@@ -20,6 +20,7 @@ func getMigrations() []migration {
 		GetInsertUsersTable(), // Implementing the users table data migration
 		GetCreateTeamTable(),
 		GetCreateEventTable(),
+		GetCreateGalleryTable(),
 		// Add your migrations here
 	}
 }
