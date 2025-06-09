@@ -20,35 +20,8 @@ func ImplTeamService(repo *contract.Repository) contract.TeamService {
 	}
 }
 
-func (t *TeamService) GetMemberByDivision(division string) (*dto.TeamResponse, error) {
-	teams, err := t.TeamRepository.GetMemberByDivision(division)
-	if err != nil {
-		return nil, errs.NotFound("No members found in this division")
-	}
-
-	data := []dto.TeamData{}
-	for _, team := range teams {
-		data = append(data, dto.TeamData{
-			ID:       team.ID,
-			Name:     team.Name,
-			Role:     team.Role,
-			Division: team.Division,
-			Year:     team.Year,
-			Status:   team.Status,
-		})
-	}
-
-	response := &dto.TeamResponse{
-		StatusCode: http.StatusOK,
-		Message:    "Member data retrieved successfully",
-		Data:       data,
-	}
-
-	return response, nil
-}
-
-func (t *TeamService) GetAllMember() (*dto.TeamResponse, error) {
-	teams, err := t.TeamRepository.GetAllMember()
+func (t *TeamService) GetAllMember(search, status, sort string) (*dto.TeamResponse, error) {
+	teams, err := t.TeamRepository.GetAllMember(search, status, sort)
 	if err != nil {
 		return nil, errs.NotFound("No members found")
 	}
@@ -56,12 +29,14 @@ func (t *TeamService) GetAllMember() (*dto.TeamResponse, error) {
 	data := []dto.TeamData{}
 	for _, team := range teams {
 		data = append(data, dto.TeamData{
-			ID:       team.ID,
-			Name:     team.Name,
-			Role:     team.Role,
-			Division: team.Division,
-			Year:     team.Year,
-			Status:   team.Status,
+			ID:        team.ID,
+			Name:      team.Name,
+			Role:      team.Role,
+			Division:  team.Division,
+			Year:      team.Year,
+			Status:    team.Status,
+			CreatedAt: team.CreatedAt,
+			UpdatedAt: team.UpdatedAt,
 		})
 	}
 
@@ -81,12 +56,14 @@ func (t *TeamService) GetMemberByID(id uint64) (*dto.TeamResponse, error) {
 	}
 
 	data := dto.TeamData{
-		ID:       team.ID,
-		Name:     team.Name,
-		Role:     team.Role,
-		Division: team.Division,
-		Year:     team.Year,
-		Status:   team.Status,
+		ID:        team.ID,
+		Name:      team.Name,
+		Role:      team.Role,
+		Division:  team.Division,
+		Year:      team.Year,
+		Status:    team.Status,
+		CreatedAt: team.CreatedAt,
+		UpdatedAt: team.UpdatedAt,
 	}
 
 	response := &dto.TeamResponse{

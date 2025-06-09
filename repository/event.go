@@ -3,6 +3,8 @@ package repository
 import (
 	"backend/contract"
 	"backend/model"
+	"fmt"
+	"strings"
 
 	"gorm.io/gorm"
 )
@@ -17,12 +19,33 @@ func ImplEventRepository(db *gorm.DB) contract.EventRepository {
 	}
 }
 
-func (t *EventRepository) GetAllEvent() ([]model.Event, error) {
-	var event []model.Event
-	if err := t.db.Find(&event).Error; err != nil {
+func (t *EventRepository) GetAllEvent(search, status, sort string) ([]model.Event, error) {
+	var events []model.Event
+	query := t.db.Model(&model.Event{})
+
+	if search != "" {
+		query = query.Where("event_name ILIKE ? OR event_description ILIKE ?", "%"+search+"%", "%"+search+"%")
+	}
+
+	if status != "" {
+		query = query.Where("event_status = ?", status)
+	}
+
+	if sort != "" {
+		parts := strings.Split(sort, ":")
+		if len(parts) == 2 {
+			column := parts[0]
+			order := strings.ToUpper(parts[1])
+			if order == "ASC" || order == "DESC" {
+				query = query.Order(fmt.Sprintf("%s %s", column, order))
+			}
+		}
+	}
+
+	if err := query.Find(&events).Error; err != nil {
 		return nil, err
 	}
-	return event, nil
+	return events, nil
 }
 
 func (t *EventRepository) GetEventByID(id uint64) (*model.Event, error) {

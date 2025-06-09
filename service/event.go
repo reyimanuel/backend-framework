@@ -30,8 +30,8 @@ func ImplEventService(repo *contract.Repository) contract.EventService {
 	}
 }
 
-func (t *EventService) GetAllEvent() (*dto.EventResponse, error) {
-	event, err := t.EventRepository.GetAllEvent()
+func (t *EventService) GetAllEvent(search, status, sort string) (*dto.EventResponse, error) {
+	event, err := t.EventRepository.GetAllEvent(search, status, sort)
 	if err != nil {
 		return nil, errs.NotFound("no members found")
 	}

@@ -3,6 +3,8 @@ package repository
 import (
 	"backend/contract"
 	"backend/model"
+	"fmt"
+	"strings"
 
 	"gorm.io/gorm"
 )
@@ -17,9 +19,30 @@ func ImplTeamRepository(db *gorm.DB) contract.TeamRepository {
 	}
 }
 
-func (t *TeamRepository) GetAllMember() ([]model.Team, error) {
+func (t *TeamRepository) GetAllMember(search, status, sort string) ([]model.Team, error) {
 	var teams []model.Team
-	if err := t.db.Find(&teams).Error; err != nil {
+	query := t.db.Model(&model.Team{})
+
+	if search != "" {
+		query = query.Where("name ILIKE ? OR role ILIKE ? OR division ILIKE ?", "%"+search+"%", "%"+search+"%", "%"+search+"%")
+	}
+
+	if status != "" {
+		query = query.Where("status = ?", status)
+	}
+
+	if sort != "" {
+		parts := strings.Split(sort, ":")
+		if len(parts) == 2 {
+			column := parts[0]
+			order := strings.ToUpper(parts[1])
+			if order == "ASC" || order == "DESC" {
+				query = query.Order(fmt.Sprintf("%s %s", column, order))
+			}
+		}
+	}
+
+	if err := query.Find(&teams).Error; err != nil {
 		return nil, err
 	}
 	return teams, nil
@@ -51,12 +74,4 @@ func (t *TeamRepository) DeleteMember(id uint64) error {
 		return err
 	}
 	return nil
-}
-
-func (t *TeamRepository) GetMemberByDivision(division string) ([]model.Team, error) {
-	var teams []model.Team
-	if err := t.db.Where("division = ?", division).Find(&teams).Error; err != nil {
-		return nil, err
-	}
-	return teams, nil
 }

@@ -3,6 +3,8 @@ package repository
 import (
 	"backend/contract"
 	"backend/model"
+	"fmt"
+	"strings"
 
 	"gorm.io/gorm"
 )
@@ -17,9 +19,26 @@ func ImplGalleryRepository(db *gorm.DB) contract.GalleryRepository {
 	}
 }
 
-func (g *GalleryRepository) GetAllGalleries() ([]model.Gallery, error) {
+func (g *GalleryRepository) GetAllGalleries(search, sort string) ([]model.Gallery, error) {
 	var galleries []model.Gallery
-	if err := g.db.Find(&galleries).Error; err != nil {
+	query := g.db.Model(&model.Gallery{})
+
+	if search != "" {
+		query = query.Where("name ILIKE ? OR description ILIKE ?", "%"+search+"%", "%"+search+"%")
+	}
+
+	if sort != "" {
+		parts := strings.Split(sort, ":")
+		if len(parts) == 2 {
+			column := parts[0]
+			order := strings.ToUpper(parts[1])
+			if order == "ASC" || order == "DESC" {
+				query = query.Order(fmt.Sprintf("%s %s", column, order))
+			}
+		}
+	}
+
+	if err := query.Find(&galleries).Error; err != nil {
 		return nil, err
 	}
 	return galleries, nil

@@ -29,11 +29,14 @@ func (t *TeamController) InitRoute(app *gin.RouterGroup) {
 	app.POST("/create", middleware.MiddlewareLogin, t.CreateMember)
 	app.PATCH("/update/:id", middleware.MiddlewareLogin, t.UpdateMember)
 	app.DELETE("/delete/:id", middleware.MiddlewareLogin, t.DeleteMember)
-	app.GET("/division/:division", middleware.MiddlewareLogin, t.GetMemberByDivision)
 }
 
 func (t *TeamController) GetAllMember(ctx *gin.Context) {
-	response, err := t.service.GetAllMember()
+	search := ctx.Query("search")
+	status := ctx.Query("status")
+	sort := ctx.DefaultQuery("sort", "")
+
+	response, err := t.service.GetAllMember(search, status, sort)
 	if err != nil {
 		HandlerError(ctx, err)
 		return
@@ -49,16 +52,6 @@ func (t *TeamController) GetMemberByID(ctx *gin.Context) {
 		return
 	}
 	response, err := t.service.GetMemberByID(idUint)
-	if err != nil {
-		HandlerError(ctx, err)
-		return
-	}
-	ctx.JSON(http.StatusOK, response)
-}
-
-func (t *TeamController) GetMemberByDivision(ctx *gin.Context) {
-	division := ctx.Param("division")
-	response, err := t.service.GetMemberByDivision(division)
 	if err != nil {
 		HandlerError(ctx, err)
 		return

@@ -29,6 +29,31 @@ func ImplGalleryService(repo *contract.Repository) contract.GalleryService {
 	}
 }
 
+func (g *GalleryService) GetAllGalleries(search, sort string) (*dto.GalleryResponse, error) {
+	galleries, err := g.GalleryRepository.GetAllGalleries(search, sort)
+	if err != nil {
+		return nil, errs.NotFound("Pictures data not found")
+	}
+
+	data := []dto.GalleryData{}
+	for _, gallery := range galleries {
+		data = append(data, dto.GalleryData{
+			ID:          gallery.ID,
+			Name:        gallery.Name,
+			Description: gallery.Description,
+			ImageURL:    fmt.Sprintf("%s%s", g.baseURL, gallery.ImageURL),
+			CreatedAt:   gallery.CreatedAt,
+			UpdatedAt:   gallery.UpdatedAt,
+		})
+	}
+
+	return &dto.GalleryResponse{
+		StatusCode: http.StatusOK,
+		Message:    "Galleries data retrieved successfully",
+		Data:       data,
+	}, nil
+}
+
 func (g *GalleryService) GetGalleryByID(galleryID uint64) (*dto.GalleryResponse, error) {
 	gallery, err := g.GalleryRepository.GetGalleryByID(galleryID)
 	if err != nil {
@@ -46,33 +71,6 @@ func (g *GalleryService) GetGalleryByID(galleryID uint64) (*dto.GalleryResponse,
 		StatusCode: http.StatusOK,
 		Message:    "Gallery data retrieved successfully",
 		Data:       []dto.GalleryData{data},
-	}
-
-	return response, nil
-}
-
-func (g *GalleryService) GetAllGalleries() (*dto.GalleryResponse, error) {
-	galleries, err := g.GalleryRepository.GetAllGalleries()
-	if err != nil {
-		return nil, errs.NotFound("Pictures data not found")
-	}
-
-	data := []dto.GalleryData{}
-	for _, gallery := range galleries {
-		data = append(data, dto.GalleryData{
-			ID:          gallery.ID,
-			Name:        gallery.Name,
-			Description: gallery.Description,
-			ImageURL:    fmt.Sprintf("%s%s", g.baseURL, gallery.ImageURL),
-			CreatedAt:   gallery.CreatedAt,
-			UpdatedAt:   gallery.UpdatedAt,
-		})
-	}
-
-	response := &dto.GalleryResponse{
-		StatusCode: http.StatusOK,
-		Message:    "Galleries data retrieved successfully",
-		Data:       data,
 	}
 
 	return response, nil

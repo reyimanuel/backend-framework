@@ -32,7 +32,10 @@ func (g *GalleryController) InitRoute(app *gin.RouterGroup) {
 }
 
 func (g *GalleryController) GetAllGalleries(ctx *gin.Context) {
-	response, err := g.service.GetAllGalleries()
+	search := ctx.Query("search")
+	sort := ctx.DefaultQuery("sort", "") // contoh: created_at:desc
+
+	response, err := g.service.GetAllGalleries(search, sort)
 	if err != nil {
 		HandlerError(ctx, err)
 		return

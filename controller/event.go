@@ -32,7 +32,11 @@ func (t *EventController) InitRoute(app *gin.RouterGroup) {
 }
 
 func (t *EventController) GetAllEvent(ctx *gin.Context) {
-	response, err := t.service.GetAllEvent()
+	search := ctx.Query("search")
+	status := ctx.Query("status")
+	sortParam := ctx.DefaultQuery("sort", "")
+
+	response, err := t.service.GetAllEvent(search, status, sortParam)
 	if err != nil {
 		HandlerError(ctx, err)
 		return
