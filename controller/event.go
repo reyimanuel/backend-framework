@@ -24,8 +24,8 @@ func (t *EventController) InitService(service *contract.Service) {
 }
 
 func (t *EventController) InitRoute(app *gin.RouterGroup) {
-	app.GET("/all", middleware.MiddlewareLogin, t.GetAllEvent)
-	app.GET("/:id", middleware.MiddlewareLogin, t.GetEventByID)
+	app.GET("/all", t.GetAllEvent)
+	app.GET("/:id", t.GetEventByID)
 	app.POST("/create", middleware.MiddlewareLogin, t.CreateEvent)
 	app.PATCH("/update/:id", middleware.MiddlewareLogin, t.UpdateEvent)
 	app.DELETE("/delete/:id", middleware.MiddlewareLogin, t.DeleteEvent)

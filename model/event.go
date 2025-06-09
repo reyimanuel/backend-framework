@@ -11,6 +11,7 @@ type Event struct {
 	EventDescription string    `json:"event_description" gorm:"not null"`
 	EventOrganizer   string    `json:"event_organizer" gorm:"not null"`
 	EventStatus      string    `json:"event_status" gorm:"not null"`
+	EventCategory    string    `json:"event_category" gorm:"not null"`
 	EventImageURL    string    `json:"event_image_url" gorm:"not null"`
 	CreatedAt        time.Time `gorm:"column:created_at;not null;autoCreateTime;<-:create"`
 	UpdatedAt        time.Time `gorm:"column:updated_at;not null;autoCreateTime;autoUpdateTime"`

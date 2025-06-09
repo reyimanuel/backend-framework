@@ -24,8 +24,8 @@ func (t *TeamController) InitService(service *contract.Service) {
 }
 
 func (t *TeamController) InitRoute(app *gin.RouterGroup) {
-	app.GET("/all", middleware.MiddlewareLogin, t.GetAllMember)
-	app.GET("/:id", middleware.MiddlewareLogin, t.GetMemberByID)
+	app.GET("/all",t.GetAllMember)
+	app.GET("/:id", t.GetMemberByID)
 	app.POST("/create", middleware.MiddlewareLogin, t.CreateMember)
 	app.PATCH("/update/:id", middleware.MiddlewareLogin, t.UpdateMember)
 	app.DELETE("/delete/:id", middleware.MiddlewareLogin, t.DeleteMember)

@@ -24,8 +24,8 @@ func (g *GalleryController) InitService(service *contract.Service) {
 }
 
 func (g *GalleryController) InitRoute(app *gin.RouterGroup) {
-	app.GET("/all", middleware.MiddlewareLogin, g.GetAllGalleries)
-	app.GET("/:id", middleware.MiddlewareLogin, g.GetGalleryByID)
+	app.GET("/all", g.GetAllGalleries)
+	app.GET("/:id", g.GetGalleryByID)
 	app.POST("/create", middleware.MiddlewareLogin, g.CreateGallery)
 	app.PATCH("/update/:id", middleware.MiddlewareLogin, g.UpdateGallery)
 	app.DELETE("/delete/:id", middleware.MiddlewareLogin, g.DeleteGallery)
