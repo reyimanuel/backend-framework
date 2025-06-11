@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"strings"
 
 	"github.com/joho/godotenv"
 )
@@ -61,16 +62,20 @@ func Load() {
 		RefreshTokenLifeTime = 86400 // Default value of 24 hours
 	}
 
-	PrivateKeyPath := os.Getenv("PRIVATE_KEY")
-	if PrivateKeyPath == "" {
-		log.Fatalf("PRIVATE_KEY_PATH environment variable is not set, check your .env file")
+	privateKeyPEM := os.Getenv("PRIVATE_KEY")
+	if privateKeyPEM == "" {
+		log.Fatalf("PRIVATE_KEY environment variable is not set, check your Railway environment variables")
 	}
-
-	PublicKeyPath := os.Getenv("PUBLIC_KEY")
-	if PublicKeyPath == "" {
-		log.Fatalf("PUBLIC_KEY_PATH environment variable is not set, check your .env file")
+	
+	publicKeyPEM := os.Getenv("PUBLIC_KEY")
+	if publicKeyPEM == "" {
+		log.Fatalf("PUBLIC_KEY environment variable is not set, check your Railway environment variables")
 	}
-
+	
+	// Replace literal '\n' from Railway's env to actual newlines
+	privateKeyPEM = strings.ReplaceAll(privateKeyPEM, "\\n", "\n")
+	publicKeyPEM = strings.ReplaceAll(publicKeyPEM, "\\n", "\n")
+	
 	BaseURL := os.Getenv("BASE_URL")
 	if BaseURL == "" {
 		BaseURL = fmt.Sprintf("http://localhost:%d", port)
@@ -83,8 +88,8 @@ func Load() {
 		DbUri:                loadDatabaseConfig(),
 		AccessTokenLifeTime:  uint(AccessTokenLifeTime),
 		RefreshTokenLifeTime: uint(RefreshTokenLifeTime),
-		PrivateKeyPath:       PrivateKeyPath,
-		PublicKeyPath:        PublicKeyPath,
+		PrivateKeyPath:       privateKeyPEM,
+		PublicKeyPath:        publicKeyPEM,
 		BaseURL:              BaseURL,
 	}
 }
