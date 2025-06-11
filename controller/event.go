@@ -67,7 +67,8 @@ func (t *EventController) CreateEvent(ctx *gin.Context) {
 	eventDescription := ctx.PostForm("event_description")
 	eventOrganizer := ctx.PostForm("event_organizer")
 	eventStatus := ctx.PostForm("event_status")
-	if eventName == "" || eventDate == "" || eventTime == "" || eventLocation == "" || eventDescription == "" || eventOrganizer == "" || eventStatus == "" {
+	eventCategory := ctx.PostForm("event_category")
+	if eventName == "" || eventDate == "" || eventTime == "" || eventLocation == "" || eventDescription == "" || eventOrganizer == "" || eventStatus == "" || eventCategory == "" {
 		HandlerError(ctx, errs.BadRequest("All fields are required"))
 		return
 	}
@@ -86,6 +87,7 @@ func (t *EventController) CreateEvent(ctx *gin.Context) {
 		EventDescription: eventDescription,
 		EventOrganizer:   eventOrganizer,
 		EventStatus:      eventStatus,
+		EventCategory:    eventCategory,
 	}
 
 	response, err := t.service.CreateEvent(ctx, payload, file)
@@ -112,6 +114,7 @@ func (t *EventController) UpdateEvent(ctx *gin.Context) {
 	eventDescription := ctx.PostForm("event_description")
 	eventOrganizer := ctx.PostForm("event_organizer")
 	eventStatus := ctx.PostForm("event_status")
+	eventCategory := ctx.PostForm("event_category")
 
 	payload := &dto.EventRequest{
 		EventName:        eventName,
@@ -121,6 +124,7 @@ func (t *EventController) UpdateEvent(ctx *gin.Context) {
 		EventDescription: eventDescription,
 		EventOrganizer:   eventOrganizer,
 		EventStatus:      eventStatus,
+		EventCategory:    eventCategory,
 	}
 
 	file, _ := ctx.FormFile("event_image")

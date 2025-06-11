@@ -42,6 +42,7 @@ func (g *GalleryService) GetAllGalleries(search, sort string) (*dto.GalleryRespo
 			Name:        gallery.Name,
 			Description: gallery.Description,
 			ImageURL:    fmt.Sprintf("%s%s", g.baseURL, gallery.ImageURL),
+			Category:    gallery.Category,
 			CreatedAt:   gallery.CreatedAt,
 			UpdatedAt:   gallery.UpdatedAt,
 		})
@@ -65,6 +66,7 @@ func (g *GalleryService) GetGalleryByID(galleryID uint64) (*dto.GalleryResponse,
 		Name:        gallery.Name,
 		Description: gallery.Description,
 		ImageURL:    gallery.ImageURL,
+		Category:    gallery.Category,
 	}
 
 	response := &dto.GalleryResponse{
@@ -94,6 +96,7 @@ func (g *GalleryService) CreateGallery(ctx *gin.Context, payload *dto.GalleryReq
 		Name:        payload.Name,
 		Description: payload.Description,
 		ImageURL:    imageURL,
+		Category:    payload.Category,
 	}
 
 	newGallery, err := g.GalleryRepository.CreateGallery(gallery)
@@ -111,6 +114,7 @@ func (g *GalleryService) CreateGallery(ctx *gin.Context, payload *dto.GalleryReq
 				Name:        newGallery.Name,
 				Description: newGallery.Description,
 				ImageURL:    fmt.Sprintf("%s%s", g.baseURL, newGallery.ImageURL),
+				Category:    newGallery.Category,
 				CreatedAt:   newGallery.CreatedAt,
 				UpdatedAt:   newGallery.UpdatedAt,
 			},
@@ -150,6 +154,7 @@ func (g *GalleryService) UpdateGallery(ctx *gin.Context, id uint64, payload *dto
 		Name:        helpers.Choose(payload.Name, oldGallery.Name),
 		Description: helpers.Choose(payload.Description, oldGallery.Description),
 		ImageURL:    updatedImage,
+		Category:    helpers.Choose(payload.Category, oldGallery.Category),
 	}
 
 	if err := g.GalleryRepository.UpdateGallery(id, updateGallery); err != nil {
@@ -172,6 +177,7 @@ func (g *GalleryService) UpdateGallery(ctx *gin.Context, id uint64, payload *dto
 				Name:        updateGallery.Name,
 				Description: updateGallery.Description,
 				ImageURL:    fmt.Sprintf("%s%s", g.baseURL, updatedImage),
+				Category:    updateGallery.Category,
 				CreatedAt:   updateGallery.CreatedAt,
 				UpdatedAt:   updateGallery.UpdatedAt,
 			},

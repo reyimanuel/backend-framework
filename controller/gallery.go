@@ -73,9 +73,12 @@ func (g *GalleryController) CreateGallery(ctx *gin.Context) {
 		return
 	}
 
+	Category := ctx.PostForm("category")
+
 	payload := dto.GalleryRequest{
 		Name:        name,
 		Description: description,
+		Category:    Category,
 	}
 
 	response, err := g.service.CreateGallery(ctx, &payload, file)
@@ -98,10 +101,12 @@ func (g *GalleryController) UpdateGallery(ctx *gin.Context) {
 	name := ctx.PostForm("name")
 	description := ctx.PostForm("description")
 	file, _ := ctx.FormFile("image")
+	category := ctx.PostForm("category")
 
 	payload := dto.GalleryRequest{
 		Name:        name,
 		Description: description,
+		Category:    category,
 	}
 
 	response, err := g.service.UpdateGallery(ctx, idUint, &payload, file)

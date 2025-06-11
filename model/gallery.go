@@ -7,6 +7,7 @@ type Gallery struct {
 	Name        string    `json:"name" gorm:"not null"`
 	Description string    `json:"description" gorm:"not null"`
 	ImageURL    string    `json:"image_url" gorm:"not null"`
+	Category    string    `json:"category" gorm:"not null"`
 	CreatedAt   time.Time `gorm:"column:created_at;not null;autoCreateTime;<-:create"`
 	UpdatedAt   time.Time `gorm:"column:updated_at;not null;autoCreateTime;autoUpdateTime"`
 }

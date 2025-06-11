@@ -7,6 +7,7 @@ type GalleryData struct {
 	Name        string    `json:"name" gorm:"not null"`
 	Description string    `json:"description"`
 	ImageURL    string    `json:"image_url" gorm:"not null"`
+	Category   string    `json:"category" gorm:"not null"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
 }
@@ -14,6 +15,7 @@ type GalleryData struct {
 type GalleryRequest struct {
 	Name        string `json:"name" gorm:"not null"`
 	Description string `json:"description"`
+	Category    string `json:"category" gorm:"not null"`
 	// ImageURL    string `json:"image_url" gorm:"not null"`
 }
 

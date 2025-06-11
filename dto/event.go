@@ -11,6 +11,7 @@ type EventData struct {
 	EventDescription string    `json:"event_description"`
 	EventOrganizer   string    `json:"event_organizer" gorm:"not null"`
 	EventStatus      string    `json:"event_status" gorm:"not null"`
+	EventCategory	string    `json:"event_category" gorm:"not null"`
 	EventImageURL    string    `json:"event_image_url"`
 	CreatedAt        time.Time `json:"created_at"`
 	UpdatedAt        time.Time `json:"updated_at"`
@@ -24,6 +25,7 @@ type EventRequest struct {
 	EventDescription string `json:"event_description"`
 	EventOrganizer   string `json:"event_organizer"`
 	EventStatus      string `json:"event_status"`
+	EventCategory	string `json:"event_category"`
 }
 
 type EventResponse struct {

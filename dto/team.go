@@ -9,7 +9,6 @@ type TeamData struct {
 	Division  string    `json:"division" gorm:"not null"`
 	Year      string    `json:"year" gorm:"not null"`
 	Status    string    `json:"status" gorm:"not null"`
-	Category  string    `json:"category" gorm:"not null"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
@@ -20,7 +19,6 @@ type TeamRequest struct {
 	Division string `json:"division"`
 	Year     string `json:"year"`
 	Status   string `json:"status"`
-	Category string `json:"category"`
 }
 
 type TeamResponse struct {
