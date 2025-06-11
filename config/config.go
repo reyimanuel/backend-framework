@@ -18,8 +18,8 @@ type AppConfigurationMap struct {
 	DbUri                string // Database connection.
 	AccessTokenLifeTime  uint   // AccessTokenLifeTime is the lifetime of the access token in seconds.
 	RefreshTokenLifeTime uint   // RefreshTokenLifeTime is the lifetime of the refresh token in seconds.
-	PrivateKeyPath       string // Path to the private key file.
-	PublicKeyPath        string // Path to the public key file.
+	PrivateKeyPEM        string // was PrivateKeyPath
+	PublicKeyPEM         string
 	BaseURL              string // BaseURL is the base URL of the application, used for generating absolute URLs.
 }
 
@@ -88,8 +88,8 @@ func Load() {
 		DbUri:                loadDatabaseConfig(),
 		AccessTokenLifeTime:  uint(AccessTokenLifeTime),
 		RefreshTokenLifeTime: uint(RefreshTokenLifeTime),
-		PrivateKeyPath:       privateKeyPEM,
-		PublicKeyPath:        publicKeyPEM,
+		PrivateKeyPEM:        privateKeyPEM, 
+		PublicKeyPEM:         publicKeyPEM,
 		BaseURL:              BaseURL,
 	}
 }
