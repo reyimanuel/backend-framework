@@ -12,13 +12,13 @@ import (
 	"gorm.io/gorm/logger"
 )
 
-// ConnectDB initializes and returns a GORM database connection and its underlying SQL connection.
+// ConnectDB initializes and returns a GORM database connection and its underlying SQL connection with retry.
 func ConnectDB() (*gorm.DB, *sql.DB) {
 	cfg := config.Get() // Get the database configuration from the config package.
 
 	// Set up a custom SQL logger to log queries
 	sqlLogger := logger.New(
-		log.New(os.Stdout, "\r\n", log.LstdFlags), // Logs output to console
+		log.New(os.Stdout, "\r\n", log.LstdFlags),
 		logger.Config{
 			SlowThreshold:             time.Second,
 			LogLevel:                  logger.Info,
@@ -27,32 +27,45 @@ func ConnectDB() (*gorm.DB, *sql.DB) {
 			Colorful:                  true,
 		})
 
-	log.Println("connecting to databases...")
+	log.Println("Connecting to database...")
 
-	db, err := gorm.Open(postgres.Open(cfg.DbUri), &gorm.Config{ // Open connection to database using GORM and PostgreSQL
-		Logger:                 sqlLogger, // Use the custom SQL logger
-		SkipDefaultTransaction: true,      // Skip default transaction
-		AllowGlobalUpdate:      false,     // Do not allow global updates to avoid accidental data loss
-	})
+	var db *gorm.DB
+	var err error
 
-	// Check if there's an error while connecting to the database
-	if err != nil {
-		log.Fatalf("error connect sql. error : %v", err)
+	maxRetries := 5
+	retryDelay := 5 * time.Second
+
+	for attempt := 1; attempt <= maxRetries; attempt++ {
+		db, err = gorm.Open(postgres.Open(cfg.DbUri), &gorm.Config{
+			Logger:                 sqlLogger,
+			SkipDefaultTransaction: true,
+			AllowGlobalUpdate:      false,
+		})
+
+		if err == nil {
+			log.Println("Successfully connected to the database!")
+			break
+		}
+
+		log.Printf("Failed to connect to the database (attempt %d/%d): %v", attempt, maxRetries, err)
+		if attempt < maxRetries {
+			log.Printf("Retrying in %v...", retryDelay)
+			time.Sleep(retryDelay)
+		} else {
+			log.Fatalf("Could not connect to the database after %d attempts: %v", maxRetries, err)
+		}
 	}
-
-	log.Println("Set database connection configuration...")
 
 	sqlDB, err := db.DB()
-
 	if err != nil {
-		log.Fatalf("Error set database connection configuration. error : %v", err)
+		log.Fatalf("Error obtaining SQL DB from GORM: %v", err)
 	}
 
+	// Set DB connection pool settings
 	sqlDB.SetMaxIdleConns(10)
-
 	sqlDB.SetMaxOpenConns(100)
-
 	sqlDB.SetConnMaxLifetime(time.Hour)
 
+	log.Println("Database connection pool configured.")
 	return db, sqlDB
 }
