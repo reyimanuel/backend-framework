@@ -12,14 +12,14 @@ import (
 
 // This is a struct that holds the configuration of the application.
 type AppConfigurationMap struct {
-	Port                 int    // Port is the port number that the server will listen to.
-	IsProduction         bool   // IsProduction is a flag that indicates whether the application is running in production mode.
-	DbUri                string // Database connection.
+	Port               int    // Port is the port number that the server will listen to.
+	IsProduction       bool   // IsProduction is a flag that indicates whether the application is running in production mode.
+	DbUri              string // Database connection string (DSN).
 	AccessTokenLifeTime  uint   // AccessTokenLifeTime is the lifetime of the access token in seconds.
 	RefreshTokenLifeTime uint   // RefreshTokenLifeTime is the lifetime of the refresh token in seconds.
-	PrivateKeyPath       string // Path to the private key file.
-	PublicKeyPath        string // Path to the public key file.
-	BaseURL              string // BaseURL is the base URL of the application, used for generating absolute URLs.
+	PrivateKeyPath     string // Path to the private key file.
+	PublicKeyPath      string // Path to the public key file.
+	BaseURL            string // BaseURL is the base URL of the application, used for generating absolute URLs.
 }
 
 // config is a global variable that stores the loaded application configuration.
@@ -34,18 +34,17 @@ func Get() *AppConfigurationMap {
 func Load() {
 	log.Println("Loading config from environment...")
 
-	// Load environment variables from a .env file.
+	// Load environment variables from a .env file for local development.
+	// This will be gracefully ignored in production environments like Railway where no .env file exists.
 	err := godotenv.Load()
 	if err != nil {
-		log.Printf("Error loading environment variables, try to get from environtment OS")
+		log.Println("Could not load .env file, relying on OS environment variables.")
 	}
 
 	// Read the PORT environment variable and convert it to an integer.
 	port, err := strconv.Atoi(os.Getenv("PORT"))
-
-	// Set default value port if env doesn't have PORT config
 	if err != nil {
-		port = 8080
+		port = 8080 // Set default value port if env doesn't have PORT config
 	}
 
 	// Check if the application is running in production mode.
@@ -61,14 +60,46 @@ func Load() {
 		RefreshTokenLifeTime = 86400 // Default value of 24 hours
 	}
 
+	// --- LOGIKA DATABASE YANG DIPERBARUI ---
+	// Prioritaskan penggunaan DATABASE_URL yang disediakan oleh Railway.
+	dbUri := os.Getenv("DATABASE_URL")
+	
+	// Jika DATABASE_URL tidak ada, coba bangun DSN dari variabel PG* individual.
+	// Ini membuat konfigurasi fleksibel untuk lokal dan produksi.
+	if dbUri == "" {
+		log.Println("DATABASE_URL not found, building DSN from individual PG* variables...")
+
+		host := os.Getenv("PGHOST")
+		user := os.Getenv("PGUSER")
+		pass := os.Getenv("PGPASSWORD")
+		name := os.Getenv("PGDATABASE")
+		dbPort := os.Getenv("PGPORT")
+
+		// Host adalah variabel paling penting. Jika tidak ada, koneksi tidak mungkin.
+		if host == "" {
+			log.Fatalf("Database configuration is incomplete. Set DATABASE_URL or individual PG* variables (e.g., PGHOST).")
+		}
+		
+		// Gunakan port default postgres jika tidak dispesifikasikan
+		if dbPort == "" {
+			dbPort = "5432"
+		}
+
+		// Buat string DSN (Data Source Name) yang dimengerti oleh GORM.
+		// sslmode=disable sering digunakan untuk koneksi di jaringan internal yang aman seperti Railway.
+		dbUri = fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable", host, user, pass, name, dbPort)
+	}
+	// --- AKHIR LOGIKA DATABASE ---
+
+
 	PrivateKeyPath := os.Getenv("PRIVATE_KEY")
 	if PrivateKeyPath == "" {
-		log.Fatalf("PRIVATE_KEY_PATH environment variable is not set, check your .env file")
+		log.Println("Warning: PRIVATE_KEY environment variable is not set.")
 	}
 
 	PublicKeyPath := os.Getenv("PUBLIC_KEY")
 	if PublicKeyPath == "" {
-		log.Fatalf("PUBLIC_KEY_PATH environment variable is not set, check your .env file")
+		log.Println("Warning: PUBLIC_KEY environment variable is not set.")
 	}
 
 	BaseURL := os.Getenv("BASE_URL")
@@ -80,34 +111,13 @@ func Load() {
 	config = &AppConfigurationMap{
 		Port:                 port,
 		IsProduction:         isProduction,
-		DbUri:                loadDatabaseConfig(),
+		DbUri:                dbUri, // Gunakan dbUri yang sudah benar
 		AccessTokenLifeTime:  uint(AccessTokenLifeTime),
 		RefreshTokenLifeTime: uint(RefreshTokenLifeTime),
 		PrivateKeyPath:       PrivateKeyPath,
 		PublicKeyPath:        PublicKeyPath,
 		BaseURL:              BaseURL,
 	}
-}
-
-// loadDatabaseConfig is a function that loads the database configuration from the environment variables.
-func loadDatabaseConfig() string {
-	user := getFromEnv("DB_USER")
-	pass := getFromEnv("DB_PASS")
-	name := getFromEnv("DB_NAME")
-	host := getFromEnv("DB_HOST")
-	port := getFromEnv("DB_PORT")
-	timeZone := getFromEnv("DB_TIME_ZONE")
-
-	return fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s TimeZone=%s", host, user, pass, name, port, timeZone)
-}
-
-// getFromEnv retrieves an environment variable by key and exits the program if it's not set.
-func getFromEnv(key string) string {
-	value := os.Getenv(key)
-	if value == "" {
-		// If the environment variable is missing, log an error and terminate the application.
-		log.Fatalf("%s Environment variable is not set", value)
-	}
-
-	return value
+	
+	log.Println("Configuration loaded successfully.")
 }
