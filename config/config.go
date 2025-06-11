@@ -17,8 +17,8 @@ type AppConfigurationMap struct {
 	DbUri              string // Database connection string (DSN).
 	AccessTokenLifeTime  uint   // AccessTokenLifeTime is the lifetime of the access token in seconds.
 	RefreshTokenLifeTime uint   // RefreshTokenLifeTime is the lifetime of the refresh token in seconds.
-	PrivateKeyPath     string // Path to the private key file.
-	PublicKeyPath      string // Path to the public key file.
+	PrivateKeyPEM     string // Path to the private key file.
+	PublicKeyPEM      string // Path to the public key file.
 	BaseURL            string // BaseURL is the base URL of the application, used for generating absolute URLs.
 }
 
@@ -92,14 +92,14 @@ func Load() {
 	// --- AKHIR LOGIKA DATABASE ---
 
 
-	PrivateKeyPath := os.Getenv("PRIVATE_KEY")
-	if PrivateKeyPath == "" {
-		log.Println("Warning: PRIVATE_KEY environment variable is not set.")
+	PrivateKeyPEM := os.Getenv("PRIVATE_KEY")
+	if PrivateKeyPEM == "" {
+		log.Fatalf("PRIVATE_KEY environment variable is not set, check your Railway environment variables")
 	}
-
-	PublicKeyPath := os.Getenv("PUBLIC_KEY")
-	if PublicKeyPath == "" {
-		log.Println("Warning: PUBLIC_KEY environment variable is not set.")
+	
+	PublicKeyPEM := os.Getenv("PUBLIC_KEY")
+	if PublicKeyPEM == "" {
+		log.Fatalf("PUBLIC_KEY environment variable is not set, check your Railway environment variables")
 	}
 
 	BaseURL := os.Getenv("BASE_URL")
@@ -114,8 +114,8 @@ func Load() {
 		DbUri:                dbUri, // Gunakan dbUri yang sudah benar
 		AccessTokenLifeTime:  uint(AccessTokenLifeTime),
 		RefreshTokenLifeTime: uint(RefreshTokenLifeTime),
-		PrivateKeyPath:       PrivateKeyPath,
-		PublicKeyPath:        PublicKeyPath,
+		PrivateKeyPEM:       PrivateKeyPEM,
+		PublicKeyPEM:        PublicKeyPEM,
 		BaseURL:              BaseURL,
 	}
 	
