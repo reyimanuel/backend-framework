@@ -15,6 +15,7 @@ type Repository struct {
 
 type AuthRepository interface {
 	GetUserByUsername(username string) (*model.User, error)
+	FindOrCreateUser(email, username string) (any, error)
 }
 
 type TeamRepository interface {

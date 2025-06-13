@@ -24,3 +24,21 @@ func (a *AuthRepository) GetUserByUsername(username string) (*model.User, error)
 	}
 	return &user, nil
 }
+
+
+func (a *AuthRepository) FindOrCreateUser(email, username string) (any, error) {
+	var user model.User
+	result := a.db.Where("email = ?", email).First(&user)
+	if result.Error == gorm.ErrRecordNotFound {
+		user = model.User{
+			Email:    email,
+			Username: username,
+			Password: "",
+		}
+		if err := a.db.Create(&user).Error; err != nil {
+			return nil, err
+		}
+		return user, nil
+	}
+	return user, result.Error
+}

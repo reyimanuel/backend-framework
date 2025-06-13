@@ -20,6 +20,9 @@ type AppConfigurationMap struct {
 	PrivateKeyPath       string // Path to the private key file.
 	PublicKeyPath        string // Path to the public key file.
 	BaseURL              string // BaseURL is the base URL of the application, used for generating absolute URLs.
+	ClientID     string
+	ClientSecret string
+	RedirectURL  string
 }
 
 // config is a global variable that stores the loaded application configuration.
@@ -76,6 +79,21 @@ func Load() {
 		BaseURL = fmt.Sprintf("http://localhost:%d", port)
 	}
 
+	ClientID := os.Getenv("CLIENT_ID")
+	if ClientID == "" {
+		log.Fatalf("CLIENT_ID environment variable is not set, check your .env file")
+	}
+
+	ClientSecret := os.Getenv("CLIENT_SECRET")
+	if ClientSecret == "" {
+		log.Fatalf("CLIENT_SECRET environment variable is not set, check your .env file")
+	}
+
+	RedirectURL := os.Getenv("REDIRECT_URL")
+	if RedirectURL == "" {
+		log.Fatalf("REDIRECT_URL environment variable is not set, check your .env file")
+	}
+
 	// Set global variable config
 	config = &AppConfigurationMap{
 		Port:                 port,
@@ -86,6 +104,9 @@ func Load() {
 		PrivateKeyPath:       PrivateKeyPath,
 		PublicKeyPath:        PublicKeyPath,
 		BaseURL:              BaseURL,
+		ClientID:             ClientID,
+		ClientSecret:         ClientSecret,
+		RedirectURL:          RedirectURL,
 	}
 }
 

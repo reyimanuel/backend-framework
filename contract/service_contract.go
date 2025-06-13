@@ -21,6 +21,8 @@ type Service struct {
 
 type AuthService interface {
 	Login(payload *dto.LoginRequest) (*dto.LoginResponse, error)
+	ProcessGoogleCallback(ctx *gin.Context) (any, error)
+	HandleGoogleLogin(c *gin.Context)
 }
 
 type TeamService interface {

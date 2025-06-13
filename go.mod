@@ -7,7 +7,11 @@ require (
 	gorm.io/driver/postgres v1.5.11
 )
 
-require github.com/stretchr/testify v1.10.0 // indirect
+require (
+	cloud.google.com/go/compute/metadata v0.3.0 // indirect
+	github.com/stretchr/testify v1.10.0 // indirect
+	golang.org/x/oauth2 v0.30.0
+)
 
 require (
 	github.com/bytedance/sonic v1.11.6 // indirect

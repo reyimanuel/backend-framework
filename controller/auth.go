@@ -23,6 +23,8 @@ func (a *AuthController) InitService(service *contract.Service) {
 
 func (a *AuthController) InitRoute(app *gin.RouterGroup) {
 	app.POST("/login", a.login)
+	app.GET("/google/login", a.GoogleLogin)
+	app.GET("/google/callback", a.GoogleCallback)
 }
 
 func (a *AuthController) login(ctx *gin.Context) {
@@ -38,5 +40,18 @@ func (a *AuthController) login(ctx *gin.Context) {
 		return
 	}
 
+	ctx.JSON(http.StatusOK, response)
+}
+
+func (a *AuthController) GoogleLogin(ctx *gin.Context) {
+	a.service.HandleGoogleLogin(ctx)
+}
+
+func (a *AuthController) GoogleCallback(ctx *gin.Context) {
+	response, err := a.service.ProcessGoogleCallback(ctx)
+	if err != nil {
+		HandlerError(ctx, err)
+		return
+	}
 	ctx.JSON(http.StatusOK, response)
 }

@@ -21,3 +21,9 @@ type RefreshTokenResponse struct {
 	Message     string `json:"message"`
 	AccessToken string `json:"access_token"`
 }
+
+type GoogleAuthResponse struct {
+	StatusCode int            `json:"status"`
+	Message    string         `json:"message"`
+	Data       map[string]any `json:"data"`
+}
